@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>F1 Ayakla Grand Prix</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+html,body{height:100%;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#2e7d32;color:#fff;display:flex;flex-direction:column}
+header{text-align:center;padding:10px 8px 2px;background:#111}
+h1{font-size:clamp(18px,5.5vw,30px);letter-spacing:1px}
+h1 span{color:#e10600}
+#hud{display:flex;justify-content:space-around;font-size:clamp(13px,3.6vw,18px);padding:4px;background:#111;font-weight:700}
+#comment{min-height:2.8em;font-size:clamp(13px,3.6vw,18px);color:#ffeb3b;padding:4px 10px;text-align:center;background:#111;display:flex;align-items:center;justify-content:center}
+#track{flex:1;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:8px 0}
+.lane{position:relative;height:clamp(60px,14vh,96px);background:#555;border-top:3px dashed #fff9;border-bottom:3px dashed #fff9;display:flex;align-items:center}
+.lane.me{background:#6a4b4b}
+.pit{width:60px;height:100%;background:repeating-linear-gradient(45deg,#c62828 0 10px,#eee 10px 20px);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;position:relative}
+.pit small{font-size:14px;position:absolute;top:2px;right:4px;animation:zz 1.5s infinite}
+.road{position:relative;flex:1;height:100%}
+.finish{width:30px;height:100%;background:conic-gradient(#000 25%,#fff 0 50%,#000 0 75%,#fff 0) 0 0/15px 15px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px}
+.runner{position:absolute;left:0;top:50%;font-size:clamp(36px,9vw,56px);line-height:1;transform:translate(0,-50%);will-change:transform}
+.runner .body{display:inline-block;transform:scaleX(-1)}
+.runner.run .body{animation:bob .25s infinite}
+.tag{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:11px;background:#000b;padding:1px 6px;border-radius:6px;white-space:nowrap;font-weight:700}
+.me .tag{background:#e10600}
+.puff{position:absolute;top:50%;font-size:22px;pointer-events:none;animation:puff .7s ease-out forwards}
+.emote{position:absolute;top:-10px;font-size:30px;pointer-events:none;animation:up 1s ease-out forwards;z-index:3}
+#btnWrap{padding:10px 16px calc(14px + env(safe-area-inset-bottom));background:#111}
+#run{width:100%;height:clamp(80px,17vh,130px);font-size:clamp(36px,11vw,64px);font-weight:900;color:#fff;background:radial-gradient(circle at 50% 30%,#ff4b3a,#b30000);border:none;border-radius:22px;box-shadow:0 8px 0 #600,0 10px 20px #0008;letter-spacing:3px}
+#run:active{transform:translateY(6px);box-shadow:0 2px 0 #600}
+#overlay{position:fixed;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;z-index:10;padding:16px}
+#overlay.hide{display:none}
+.card{background:#fff;color:#111;border-radius:20px;padding:24px 20px;max-width:420px;width:100%;text-align:center;border:5px solid #e10600;animation:pop .4s}
+#ovTitle{font-size:clamp(26px,8vw,40px);font-weight:900;margin-bottom:10px}
+#ovText{font-size:clamp(15px,4.3vw,19px);line-height:1.4;margin-bottom:18px}
+#ovBtn{font-size:24px;font-weight:900;padding:14px 30px;border:none;border-radius:14px;background:#e10600;color:#fff;box-shadow:0 5px 0 #700}
+#ovBtn:disabled{opacity:.4}
+#count{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(70px,25vw,160px);font-weight:900;color:#ffeb3b;text-shadow:0 0 20px #000,4px 4px 0 #e10600;pointer-events:none;z-index:9}
+#count.go{animation:pop .6s}
+.confetti{position:fixed;top:-50px;font-size:30px;pointer-events:none;z-index:11;animation:fall linear forwards}
+@keyframes bob{0%,100%{transform:scaleX(-1) translateY(0) rotate(0)}50%{transform:scaleX(-1) translateY(-8px) rotate(-8deg)}}
+@keyframes puff{from{opacity:1;transform:translate(0,-50%) scale(.6)}to{opacity:0;transform:translate(-30px,-90%) scale(1.4)}}
+@keyframes up{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-40px)}}
+@keyframes pop{0%{transform:scale(.2);opacity:0}70%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+@keyframes zz{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-4px)}}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+<header><h1>🏎️ <span>F1</span> AYAKLA GRAND PRIX 🏃</h1></header>
+<div id="hud"><div>⏱️ <span id="time">0.00</span> sn</div><div>🦵 <span id="speed">0</span> km/s</div></div>
+<div id="comment">Arabalar park halinde. Pilotlar... ısınıyor. 🤷</div>
+
+<div id="track">
+  <div class="lane"><div class="pit">🏎️<small>💤</small></div><div class="road"><div class="runner" id="r0"><span class="tag">Turbo Tayfun</span><span class="body">🏃</span></div></div><div class="finish">🏁</div></div>
+  <div class="lane me"><div class="pit">🏎️<small>💤</small></div><div class="road"><div class="runner" id="r1"><span class="tag">SEN 👑</span><span class="body">🏃</span></div></div><div class="finish">🏁</div></div>
+  <div class="lane"><div class="pit">🏎️<small>💤</small></div><div class="road"><div class="runner" id="r2"><span class="tag">Şaşkın Şükrü</span><span class="body">🏃</span></div></div><div class="finish">🏁</div></div>
+</div>
+
+<div id="btnWrap"><button id="run">KOŞ!</button></div>
+
+<div id="overlay"><div class="card">
+  <div id="ovTitle">🏁 AYAKLA GP 🏁</div>
+  <div id="ovText">Bu sezon FIA yeni bir kural getirdi:<br><b>Arabalar pitte kalacak, pilotlar koşacak!</b><br><br>KOŞ! butonuna (veya ekranın herhangi bir yerine) olabildiğince hızlı bas! İki parmak serbest. 😤</div>
+  <button id="ovBtn">BAŞLA 🚦</button>
+</div></div>
+<div id="count"></div>
+
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+
+  const racers = [
+    {name:'Turbo Tayfun', el:$('#r0'), ai:true},
+    {name:'SEN',          el:$('#r1'), ai:false},
+    {name:'Şaşkın Şükrü', el:$('#r2'), ai:true}
+  ];
+  const me = racers[1];
+  racers.forEach(r => { r.body = r.el.querySelector('.body'); r.road = r.el.parentElement; });
+
+  const comments = [
+    'Pilotlar arabaları pitte unuttu, kimse fark etmedi! 🤦',
+    'Takım telsizi: "Ayakkabıların iyi durumda, bas bas!" 👟',
+    'DRS açıldı! (Dizini Rahatça Salla) 🦵',
+    'Pit ekibi arabaları cilalıyor, pilotlar terden sırılsıklam 💦',
+    'Hakemler: "Bu kurallara uygun mu?" — Kimse bilmiyor. 🧐',
+    'Yakıt durumu: 1 simit, yarım ayran. 🥨',
+    'Mühendis: "Nabız 190! Harika veri!" 📈',
+    'Seyirciler arabaların daha hızlı olacağını düşünüyor. Haklılar. 🚗',
+    'Sponsor: "Lütfen logolu tişörtü kameraya göster!" 📸',
+    'Pit ekibi lastik yerine çorap değiştirmeye hazır! 🧦'
+  ];
+  const trips = [
+    'ayakkabı bağcığına bastı! 😵',
+    'bir güvercinle göz göze geldi ve durdu! 🐦',
+    'kaskı gözüne düştü! 🪖',
+    'nefes almayı unuttu! 😮‍💨',
+    'seyirciye el sallamak için durdu! 👋'
+  ];
+  const winMsgs = [
+    'Arabaya hiç ihtiyacın yokmuş! Ferrari seni izliyor... ama maraton takımı için. 🏃‍♂️',
+    'Pit ekibi şok: "Bu pilot benzinle değil, çayla çalışıyor!" ☕',
+    '0 litre yakıt, 0 emisyon, %100 bacak gücü! FIA sana çevre ödülü veriyor. 🌱',
+    'Kupa senin! Ama bacakların yarın seni affetmeyecek. 🦵💀',
+    'Şampanya patlat! Sonra otur, çünkü artık yürüyemezsin. 🍾'
+  ];
+  const loseMsgs = [
+    'Belki bir dahaki sefere arabayı kullanmayı dene? 🏎️',
+    'Mühendis telsizden: "Plan B devrede: ağlıyoruz." 😭',
+    'Kaybettin ama çorapların çok şıktı. Stil puanı: 10/10 🧦',
+    'Takım patronu açıklama yaptı: "Pilotumuz fazla sakin koştu." 🐢',
+    'Rakibin seni geçti. Pit ekibi sana teselli simidi hazırlıyor. 🥯'
+  ];
+
+  let state = 'idle', last = 0, startT = 0, nextComment = 0, elapsed = 0;
+
+  function say(t){ $('#comment').textContent = t; }
+
+  function reset(){
+    racers.forEach(r => {
+      r.pos = 0; r.v = 0; r.stun = 0; r.target = 0.12; r.next = 0;
+      r.body.textContent = '🏃';
+      r.el.classList.remove('run');
+    });
+    $('#time').textContent = '0.00';
+    $('#speed').textContent = '0';
+    render();
+  }
+
+  function xOf(r){ return r.pos * Math.max(0, r.road.clientWidth - r.el.offsetWidth); }
+
+  function render(){
+    racers.forEach(r => {
+      r.el.style.transform = 'translate(' + xOf(r) + 'px,-50%)';
+      r.el.classList.toggle('run', r.v > 0.02 && r.stun <= 0);
+    });
+  }
+
+  function spawn(r, cls, emoji){
+    const s = document.createElement('span');
+    s.className = cls; s.textContent = emoji;
+    s.style.left = (xOf(r) + (cls === 'puff' ? -10 : 10)) + 'px';
+    r.road.appendChild(s);
+    s.addEventListener('animationend', () => s.remove());
+  }
+
+  function tap(){
+    if (state === 'countdown'){ say(pick(['Sabırsız! Daha yeşil ışık yanmadı! 🚦','Hop hop! Erken çıkış yok! ✋','Bacaklar şimdiden titriyor... 🦵'])); return; }
+    if (state !== 'race') return;
+    me.v = Math.min(me.v + 0.045, 0.36);
+    spawn(me, 'puff', Math.random() < 0.25 ? '💦' : '💨');
+    if (navigator.vibrate) { try { navigator.vibrate(8); } catch(e){} }
+  }
+
+  function countdown(){
+    state = 'countdown';
+    $('#overlay').classList.add('hide');
+    const steps = ['3','2','1','KOŞ! 🏃'];
+    const talk = ['Pilotlar arabalarından iniyor... 🚪','Ayakkabı bağcıkları kontrol ediliyor... 👟','"Neden araba kullanmıyoruz?" Kimse bilmiyor. 🤷',''];
+    let i = 0;
+    const c = $('#count');
+    (function step(){
+      c.textContent = steps[i];
+      c.classList.remove('go'); void c.offsetWidth; c.classList.add('go');
+      if (talk[i]) say(talk[i]);
+      if (i === steps.length - 1){
+        state = 'race'; startT = performance.now(); last = startT; nextComment = 1.2;
+        say('VE YARIŞ BAŞLADI! Arabalar yerinden kıpırdamıyor! 🏎️💤');
+        setTimeout(() => { c.textContent = ''; }, 600);
+        requestAnimationFrame(loop);
+        return;
+      }
+      i++; setTimeout(step, 750);
+    })();
+  }
+
+  function loop(now){
+    if (state !== 'race') return;
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    elapsed = (now - startT) / 1000;
+
+    // Oyuncu: her dokunuş hız ekler, sürtünme yavaşlatır
+    me.v *= Math.exp(-2.2 * dt);
+    me.pos += me.v * dt;
+
+    // Yapay zeka rakipler: rastgele hız + arada bir komik takılma
+    racers.forEach(r => {
+      if (!r.ai) return;
+      if (r.stun > 0){
+        r.stun -= dt; r.v *= 0.85;
+        if (r.stun <= 0) r.body.textContent = '🏃';
+      } else {
+        if (elapsed > r.next){
+          r.target = 0.09 + Math.random() * 0.09;
+          r.next = elapsed + 0.4 + Math.random() * 0.7;
+          if (Math.random() < 0.08 && r.pos > 0.15 && r.pos < 0.85){
+            r.stun = 0.8; r.body.textContent = '🤕';
+            spawn(r, 'emote', '😵');
+            say(r.name + ' ' + pick(trips));
+          }
+        }
+        const tg = r.target + clamp((me.pos - r.pos) * 0.35, -0.05, 0.06);
+        r.v += (tg - r.v) * Math.min(1, dt * 3);
+        if (Math.random() < dt * 2) spawn(r, 'puff', '💨');
+      }
+      r.pos += r.v * dt;
+    });
+
+    if (elapsed > nextComment){ say(pick(comments)); nextComment = elapsed + 1.6 + Math.random(); }
+
+    $('#time').textContent = elapsed.toFixed(2);
+    $('#speed').textContent = Math.round(me.v * 200);
+
+    let winner = null;
+    racers.forEach(r => { if (r.pos >= 1){ r.pos = 1; if (!winner || r === me) winner = winner || r; } });
+    render();
+    if (winner){ finish(winner); return; }
+    requestAnimationFrame(loop);
+  }
+
+  function finish(w){
+    state = 'done';
+    racers.forEach(r => r.el.classList.remove('run'));
+    const t = elapsed.toFixed(2);
+    if (w === me){
+      me.body.textContent = '🥳';
+      $('#ovTitle').textContent = '🏆 KAZANDIN! 🏆';
+      $('#ovText').innerHTML = pick(winMsgs) + '<br><br>⏱️ Süre: <b>' + t + ' sn</b>';
+      say('İNANILMAZ! Pistte bacaklarıyla bir efsane doğdu! 🏆');
+      confetti();
+    } else {
+      w.body.textContent = '😎';
+      me.body.textContent = '😩';
+      $('#ovTitle').textContent = '😵 KAYBETTİN!';
+      $('#ovText').innerHTML = '<b>' + w.name + '</b> kazandı!<br><br>' + pick(loseMsgs);
+      say(w.name + ' bitiş çizgisini geçti! Arabalar hâlâ pitte uyuyor. 💤');
+    }
+    const b = $('#ovBtn');
+    b.textContent = 'TEKRAR KOŞ! 🔁';
+    b.disabled = true;
+    setTimeout(() => { $('#overlay').classList.remove('hide'); }, 700);
+    setTimeout(() => { b.disabled = false; }, 1500);
+  }
+
+  function confetti(){
+    const em = ['🎉','🏆','🍾','✨','🏁','🎊','👟'];
+    for (let i = 0; i < 35; i++){
+      const s = document.createElement('span');
+      s.className = 'confetti';
+      s.textContent = pick(em);
+      s.style.left = (Math.random() * 100) + 'vw';
+      s.style.animationDuration = (1.8 + Math.random() * 2) + 's';
+      s.style.animationDelay = (Math.random() * 0.8) + 's';
+      document.body.appendChild(s);
+      s.addEventListener('animationend', () => s.remove());
+    }
+  }
+
+  // Kontroller: KOŞ butonu veya ekranın herhangi bir yeri (çoklu parmak destekli)
+  document.addEventListener('pointerdown', e => {
+    if (e.target.closest('#overlay')) return;
+    e.preventDefault();
+    tap();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Space' || e.code === 'Enter'){ e.preventDefault(); if (!e.repeat) tap(); }
+  });
+  document.addEventListener('dblclick', e => e.preventDefault());
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  window.addEventListener('resize', render);
+
+  $('#ovBtn').addEventListener('click', () => { reset(); countdown(); });
+
+  reset();
+})();
+</script>
+</body>
+</html>
