@@ -33,7 +33,7 @@ python nba_analiz.py canli LAL-TOR -p 4 -k 1:10 -s 110-108 -bp 22-24 -b "q4_LAL 
 
 **Pazar anahtarı** `<periyot>_<taraf>` biçimindedir:
 - Periyot: `q1` `q2` `q3` `q4`, `iy` (ilk yarı), `iy2` (ikinci yarı), `mac`.
-- Taraf: `ev`, `dep`, `toplam` ya da takım kodu.
+- Taraf: `ev`, `dep`, `toplam` ya da takım kodu. Bahis sitesi takım adı yazmaz, "Ev üst / Dep alt" diye yazar. Ev sahibi her zaman maç kodundaki ilk takımdır (GSW-LAC'ta ev GSW, LAL-TOR'da ev LAL).
 
 ## Veriyi güncelleme
 

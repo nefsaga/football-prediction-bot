@@ -308,9 +308,9 @@ def pazar_coz(motor: Motor, anahtar: str) -> tuple[list[str], list[int], str]:
         raise ValueError(f"Pazar biçimi hatalı: {anahtar} (örn. q2_ev, q3_toplam, mac_GSW)")
     if per not in PERIYOT_ADI:
         raise ValueError(f"Bilinmeyen periyot: {per} (q1-q4, iy, iy2, mac)")
-    if kim in ("ev", "home", motor.ev.lower()):
+    if kim in ("ev", "evsahibi", "e", "home", motor.ev.lower()):
         tk, ad = [motor.ev], motor.ev
-    elif kim in ("dep", "away", motor.dep.lower()):
+    elif kim in ("dep", "deplasman", "d", "away", motor.dep.lower()):
         tk, ad = [motor.dep], motor.dep
     elif kim in ("toplam", "top", "total"):
         tk, ad = [motor.ev, motor.dep], "Toplam"
