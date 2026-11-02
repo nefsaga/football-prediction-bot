@@ -1,0 +1,70 @@
+{
+  "_aciklama": "NBA maç verileri. Ev sahibi = listede ilk yazılan takım (Avrupa usulü 'Ev v Deplasman'). Sayılar 2026-27 sezonunun ilk ~5-6 maçından; örneklem küçük, model bunları lig ortalamasına doğru çeker. Yeni veri geldikçe bu dosyayı güncelleyin.",
+  "lig": {
+    "ceyrek_paylari": [0.252, 0.250, 0.253, 0.245],
+    "takim_mac_ort": 114.5,
+    "uzatma_takim_sayi": 11.0
+  },
+  "takimlar": {
+    "GSW": {
+      "ad": "Golden State Warriors",
+      "sayi_ort": 116.7,
+      "yenen_ort": 115.3,
+      "tempo": 99.1,
+      "ceyrek_sayi": [30.0, 28.7, 29.3, 28.7],
+      "ceyrek_kaynak": "Q1/Q3/Q4 TeamRankings 2026; Q2 = maç ort - diğer çeyrekler",
+      "sakatlik_ayari": -4.0,
+      "sakatlar": "Curry (dinlenme, b2b), Draymond Green, Jimmy Butler, Porzingis, Moses Moody OUT; Gui Santos probable"
+    },
+    "LAC": {
+      "ad": "LA Clippers",
+      "sayi_ort": 105.4,
+      "yenen_ort": 111.8,
+      "tempo": 99.9,
+      "ceyrek_sayi": [28.5, 23.4, 29.3, 24.2],
+      "ceyrek_kaynak": "Q1/Q3/Q4 TeamRankings 2026; Q2 = maç ort - diğer çeyrekler",
+      "sakatlik_ayari": -1.5,
+      "sakatlar": "Brandon Ingram, Bradley Beal, Max Strus, Jordan Miller, Y. Konan Niederhauser OUT"
+    },
+    "LAL": {
+      "ad": "Los Angeles Lakers",
+      "sayi_ort": 118.0,
+      "yenen_ort": 115.0,
+      "tempo": 100.5,
+      "ceyrek_sayi": [30.6, 30.2, 34.7, 22.5],
+      "ceyrek_kaynak": "Q1/Q3/Q4 TeamRankings 2026; Q2 türetildi; maç ort. kaynaklarda 114.6-123.2 arası -> 118 alındı; yenen ort. tahmini",
+      "sakatlik_ayari": 0.0,
+      "sakatlar": "Adou Thiero OUT, Ziaire Williams şüpheli/OUT"
+    },
+    "TOR": {
+      "ad": "Toronto Raptors",
+      "sayi_ort": 116.0,
+      "yenen_ort": 113.0,
+      "tempo": 99.5,
+      "ceyrek_sayi": [32.5, 27.0, 27.1, 29.4],
+      "ceyrek_kaynak": "Q1/Q4 TeamRankings 2026; Q2/Q3 türetildi; maç/yenen ort. tahmini (geçen sezon yenen 111.8)",
+      "sakatlik_ayari": -2.0,
+      "sakatlar": "Kawhi Leonard (sol diz) OUT, Nate Bittle OUT"
+    }
+  },
+  "maclar": {
+    "GSW-LAC": {
+      "ev": "GSW",
+      "dep": "LAC",
+      "baslama_tsi": "2026-11-02 04:30",
+      "salon": "Chase Center",
+      "piyasa": {"toplam": 220.5, "ev_handikap": -2.5},
+      "piyasa_kaynak": "Açılış: toplam 219.5 (DK) - 221.5 (BetMGM), GSW -2.5",
+      "not": "GSW back-to-back ilk maçı, çok eksik. LAC 1-4 kötü seride."
+    },
+    "LAL-TOR": {
+      "ev": "LAL",
+      "dep": "TOR",
+      "baslama_tsi": "2026-11-02 05:00",
+      "salon": "Crypto.com Arena",
+      "piyasa": {"toplam": 228.5, "ev_handikap": -4.0},
+      "piyasa_kaynak": "Toplam 227.5-228.5, LAL -2.5 ile -4.5 arası",
+      "not": "LAL 4-2 (son 3 maçta 2 yenilgi), TOR 3-2."
+    }
+  }
+}
